@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Ducks from "./Ducks";
@@ -16,6 +16,8 @@ function App() {
   const [userData, setUserData] = useState({ username: "", email: "" });
 
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   function handleRegistration({ username, email, password, confirmPassword }) {
     if (password === confirmPassword) {
@@ -42,7 +44,9 @@ function App() {
           setToken(data.jwt);
           setIsloggedin(true);
           setUserData(data.user);
-          navigate("/ducks");
+
+          const redirectPath = location.state?.from?.pathname || "/ducks";
+          navigate(redirectPath);
         }
       })
       .catch(console.error);
@@ -58,7 +62,6 @@ function App() {
       .then(({ username, email }) => {
         setUserData({ username, email });
         setIsloggedin(true);
-        navigate("/ducks");
       })
       .catch(console.error);
   }, []);
@@ -80,21 +83,25 @@ function App() {
             <MyProfile userData={userData} />
           </ProtectedRoute>
         }
-      />
+      />{" "}
       <Route
         path="/login"
         element={
-          <div className="loginContainer">
-            <Login handleLogin={handleLogin} />
-          </div>
+          <ProtectedRoute isLoggedin={isLoggedin} anonymous={true}>
+            <div className="loginContainer">
+              <Login handleLogin={handleLogin} />
+            </div>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/register"
         element={
-          <div className="registerContainer">
-            <Register handleRegistration={handleRegistration} />
-          </div>
+          <ProtectedRoute isLoggedin={isLoggedin} anonymous={true}>
+            <div className="registerContainer">
+              <Register handleRegistration={handleRegistration} />
+            </div>
+          </ProtectedRoute>
         }
       />
       <Route
