@@ -7,10 +7,11 @@ import MyProfile from "./MyProfile";
 import Register from "./Register";
 import "./styles/App.css";
 import ProtectedRoute from "./ProtectedRoute";
-import { register } from "../utils/auth";
+import { authorize, register } from "../utils/auth";
 
 function App() {
   const [isLoggedin, setIsloggedin] = useState(false);
+  const [userData, setUserData] = useState({ username: "", email: "" });
 
   const navigate = useNavigate();
 
@@ -18,11 +19,28 @@ function App() {
     if (password === confirmPassword) {
       register(username, email, password)
         .then(() => {
-          // TODO
           navigate("/login");
         })
         .catch(console.error);
     }
+  }
+
+  function handleLogin({ username, password }) {
+    if (!username || !password) {
+      return;
+    }
+
+    console.log(password);
+
+    authorize(username, password)
+      .then((data) => {
+        if (data.jwt) {
+          setIsloggedin(true);
+          setUserData(data.user);
+          navigate("/ducks");
+        }
+      })
+      .catch(console.error);
   }
 
   return (
@@ -39,7 +57,7 @@ function App() {
         path="/my-profile"
         element={
           <ProtectedRoute isLoggedin={isLoggedin}>
-            <MyProfile />
+            <MyProfile userData={userData} />
           </ProtectedRoute>
         }
       />
@@ -47,7 +65,7 @@ function App() {
         path="/login"
         element={
           <div className="loginContainer">
-            <Login />
+            <Login handleLogin={handleLogin} />
           </div>
         }
       />
