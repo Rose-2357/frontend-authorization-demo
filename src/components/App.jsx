@@ -6,14 +6,29 @@ import Login from "./Login";
 import MyProfile from "./MyProfile";
 import Register from "./Register";
 import "./styles/App.css";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
-  const [isLoggedin, setIsloggedin] = useState(true);
+  const [isLoggedin, setIsloggedin] = useState(false);
 
   return (
     <Routes>
-      <Route path="/ducks" element={<Ducks />} />
-      <Route path="/my-profile" element={<MyProfile />} />
+      <Route
+        path="/ducks"
+        element={
+          <ProtectedRoute isLoggedin={isLoggedin}>
+            <Ducks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-profile"
+        element={
+          <ProtectedRoute isLoggedin={isLoggedin}>
+            <MyProfile />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/login"
         element={
