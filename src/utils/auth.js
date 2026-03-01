@@ -1,6 +1,6 @@
 export const BASE_URL = "https://api.nomoreparties.co";
 
-const headers = {
+export const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",
 };
